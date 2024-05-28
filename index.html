@@ -30,6 +30,7 @@
         };
 
         const game = new Phaser.Game(config);
+        const snakeBody = [];
 
         function preload() {}
 
@@ -54,6 +55,27 @@
 
           // Stroke the lines to make them visible
           graphics.strokePath();
+
+          // Calculate random grid position for the starting position
+          const gridColumns = Math.floor(this.game.config.width / gridSize);
+          const gridRows = Math.floor(this.game.config.height / gridSize);
+
+          const randomColumn = Phaser.Math.Between(0, gridColumns - 1);
+          const randomRow = Phaser.Math.Between(0, gridRows - 1);
+
+          const startX = randomColumn * gridSize + gridSize / 2;
+          const startY = randomRow * gridSize + gridSize / 2;
+
+          // Create the rectangle
+          const bodyPart = new Phaser.GameObjects.Rectangle(
+            this,
+            startX,
+            startY,
+            gridSize,
+            gridSize,
+            0xfcba03
+          );
+          this.add.existing(bodyPart);
         }
 
         function update() {}
