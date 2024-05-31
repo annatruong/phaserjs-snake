@@ -31,10 +31,10 @@
 
         const game = new Phaser.Game(config);
         const snakeBody = [];
-
         function preload() {}
 
         function create() {
+          /* DRAW GRID */
           const graphics = this.add.graphics();
           const gridSize = 25; // Size of each grid cell
 
@@ -56,26 +56,44 @@
           // Stroke the lines to make them visible
           graphics.strokePath();
 
+          /* CREATE SNAKE BODY */
           // Calculate random grid position for the starting position
           const gridColumns = Math.floor(this.game.config.width / gridSize);
           const gridRows = Math.floor(this.game.config.height / gridSize);
 
-          const randomColumn = Phaser.Math.Between(0, gridColumns - 1);
-          const randomRow = Phaser.Math.Between(0, gridRows - 1);
-
-          const startX = randomColumn * gridSize + gridSize / 2;
-          const startY = randomRow * gridSize + gridSize / 2;
+          column = Phaser.Math.Between(5, gridColumns - 5);
+          row = Phaser.Math.Between(5, gridRows - 5);
 
           // Create the rectangle
-          const bodyPart = new Phaser.GameObjects.Rectangle(
+          const head = createPart.call(this, { column, row, gridSize });
+          snakeBody.push(head);
+
+          row--;
+          const part1 = createPart.call(this, { column, row, gridSize });
+          snakeBody.push(part1);
+          row--;
+          const part2 = createPart.call(this, { column, row, gridSize });
+          snakeBody.push(part2);
+
+          console.log(snakeBody);
+          for (const part of snakeBody) {
+            this.add.existing(part);
+          }
+        }
+
+        function createPart({ column, row, gridSize }) {
+          const xPosition = column * gridSize + gridSize / 2;
+          const yPosition = row * gridSize + gridSize / 2;
+          const part = new Phaser.GameObjects.Rectangle(
             this,
-            startX,
-            startY,
+            xPosition,
+            yPosition,
             gridSize,
             gridSize,
             0xfcba03
           );
-          this.add.existing(bodyPart);
+          part.setStrokeStyle(1, 0xffffff);
+          return part;
         }
 
         function update() {}
