@@ -30,25 +30,30 @@
         };
 
         const game = new Phaser.Game(config);
-        const snakeBody = [];
+
         function preload() {}
 
         function create() {
+          this.snakeBody = [];
+          this.direction = "RIGHT"; // Initial direction
+          this.lastMoveTime = 0; // Time of the last move
+          this.moveInterval = 200; // Time in ms between moves
+          this.gridSize = 25; // Size of each grid cell
+
           /* DRAW GRID */
           const graphics = this.add.graphics();
-          const gridSize = 25; // Size of each grid cell
 
           // Set the line style
           graphics.lineStyle(1, 0xffffff, 1);
 
           // Draw horizontal lines
-          for (let y = 0; y < this.game.config.height; y += gridSize) {
+          for (let y = 0; y < this.game.config.height; y += this.gridSize) {
             graphics.moveTo(0, y);
             graphics.lineTo(this.game.config.width, y);
           }
 
           // Draw vertical lines
-          for (let x = 0; x < this.game.config.width; x += gridSize) {
+          for (let x = 0; x < this.game.config.width; x += this.gridSize) {
             graphics.moveTo(x, 0);
             graphics.lineTo(x, this.game.config.height);
           }
@@ -56,27 +61,65 @@
           // Stroke the lines to make them visible
           graphics.strokePath();
 
-          /* CREATE SNAKE BODY */
-          // Calculate random grid position for the starting position
-          const gridColumns = Math.floor(this.game.config.width / gridSize);
-          const gridRows = Math.floor(this.game.config.height / gridSize);
+          createSnake.call(this);
 
-          column = Phaser.Math.Between(5, gridColumns - 5);
-          row = Phaser.Math.Between(5, gridRows - 5);
+          // Handle input
+          this.input.keyboard.on("keydown", (event) => {
+            if (event.key === "ArrowUp" && this.direction !== "DOWN") {
+              this.direction = "UP";
+            } else if (event.key === "ArrowDown" && this.direction !== "UP") {
+              this.direction = "DOWN";
+            } else if (
+              event.key === "ArrowLeft" &&
+              this.direction !== "RIGHT"
+            ) {
+              this.direction = "LEFT";
+            } else if (
+              event.key === "ArrowRight" &&
+              this.direction !== "LEFT"
+            ) {
+              this.direction = "RIGHT";
+            }
+          });
+        }
 
-          // Create the rectangle
-          const head = createPart.call(this, { column, row, gridSize });
-          snakeBody.push(head);
+        function createSnake() {
+          // Get grid column and row numbers
+          const gridColumns = Math.floor(
+            this.game.config.width / this.gridSize
+          );
+          const gridRows = Math.floor(this.game.config.height / this.gridSize);
 
+          // Generate random column and row
+          let column = Phaser.Math.Between(5, gridColumns - 5);
+          let row = Phaser.Math.Between(5, gridRows - 5);
+
+          // Create snake head
+          const head = createPart.call(this, {
+            column,
+            row,
+            gridSize: this.gridSize,
+          });
+          this.snakeBody.push(head);
+
+          // Create snake body
           row--;
-          const part1 = createPart.call(this, { column, row, gridSize });
-          snakeBody.push(part1);
+          const part1 = createPart.call(this, {
+            column,
+            row,
+            gridSize: this.gridSize,
+          });
+          this.snakeBody.push(part1);
           row--;
-          const part2 = createPart.call(this, { column, row, gridSize });
-          snakeBody.push(part2);
+          const part2 = createPart.call(this, {
+            column,
+            row,
+            gridSize: this.gridSize,
+          });
+          this.snakeBody.push(part2);
 
-          console.log(snakeBody);
-          for (const part of snakeBody) {
+          // Add snake to grid
+          for (const part of this.snakeBody) {
             this.add.existing(part);
           }
         }
@@ -96,7 +139,49 @@
           return part;
         }
 
-        function update() {}
+        function update(time) {
+          if (this.isGameOver) {
+            // Stop the game completely
+            this.scene.pause();
+            return;
+          }
+
+          if (time - this.lastMoveTime >= this.moveInterval) {
+            moveSnake.call(this, this.snakeBody, this.gridSize);
+            this.lastMoveTime = time;
+          }
+        }
+
+        function moveSnake(snakeBody, gridSize) {
+          // Move the body parts
+          for (let i = snakeBody.length - 1; i > 0; i--) {
+            snakeBody[i].x = snakeBody[i - 1].x;
+            snakeBody[i].y = snakeBody[i - 1].y;
+          }
+
+          // Move the head
+          const head = snakeBody[0];
+          if (this.direction === "UP") {
+            head.y -= gridSize;
+          } else if (this.direction === "DOWN") {
+            head.y += gridSize;
+          } else if (this.direction === "LEFT") {
+            head.x -= gridSize;
+          } else if (this.direction === "RIGHT") {
+            head.x += gridSize;
+          }
+
+          // Check for collision with the walls
+          if (
+            head.x < 0 ||
+            head.x >= this.game.config.width ||
+            head.y < 0 ||
+            head.y >= this.game.config.height
+          ) {
+            this.isGameOver = true; // Set the game over flag
+            console.log("Game Over! The snake hit the wall.");
+          }
+        }
       </script>
     </main>
   </body>
