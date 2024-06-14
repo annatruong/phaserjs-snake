@@ -4,16 +4,16 @@
   "description": "Snake game created using Phaser.js",
   "main": "index.js",
   "scripts": {
-    "start": "http-server ./ -c-1",
-    "dev": "nodemon"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "author": "Anna Truong",
   "license": "ISC",
   "devDependencies": {
-    "http-server": "^14.1.1",
     "nodemon": "^3.1.1"
   },
   "dependencies": {
+    "express": "^4.19.2",
     "phaser": "^3.80.1"
   }
 }

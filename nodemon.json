@@ -1,7 +1,0 @@
-{
-    "watch": ["index.html", "src/*"],
-    "ext": "html,js,css",
-    "ignore": ["node_modules"],
-    "exec": "http-server ./ -c-1"
-  }
-  
