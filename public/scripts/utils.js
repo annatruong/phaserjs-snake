@@ -83,6 +83,8 @@ function moveSnake({ snakeBody, gridSize, ateFood, food }) {
     this.add.existing(newPart);
 
     repositionFood.call(this, { snakeBody, food });
+    this.score += 5;
+    this.scoreText.setText(`Score: ${this.score}`);
   }
 
   for (let i = snakeBody.length - 1; i > 0; i--) {
@@ -109,14 +111,12 @@ function moveSnake({ snakeBody, gridSize, ateFood, food }) {
     head.y >= this.game.config.height
   ) {
     this.isGameOver = true;
-    console.log("Game Over! The snake hit the wall.");
   }
 
   // Check for collision with itself
   for (let i = 1; i < snakeBody.length; i++) {
     if (head.x === snakeBody[i].x && head.y === snakeBody[i].y) {
       this.isGameOver = true;
-      console.log("Game Over! The snake collided with itself.");
       break;
     }
   }

@@ -4,14 +4,9 @@ const IntroScene = {
     this.load.image("introImage", "images/snake.png");
   },
   create: function () {
-    // Add background or other elements for the introduction scene
-    // Example: add a background image or text
-    const introImage = this.add
-      .image(400, 300, "introImage")
-      .setScale(0.4)
-      .setOrigin(0.5, 0.5); // Center the image
+    this.add.image(400, 300, "introImage").setScale(0.4).setOrigin(0.5, 0.5); // Center the image
 
-    const title = this.add
+    this.add
       .text(400, 150, "Snake Game", {
         fontSize: "68px",
         fill: "#fff",
@@ -19,7 +14,7 @@ const IntroScene = {
       .setOrigin(0.5);
 
     // Instructions text
-    const instructions = this.add
+    this.add
       .text(400, 500, "Press Enter to Start", {
         fontSize: "24px",
         fill: "#fff",
@@ -51,6 +46,7 @@ const GameScene = {
     this.gridSize = 25; // Size of each grid cell
     this.lastKeyPressTime = 0; // Time of the last key press
     this.keyPressCooldown = 95; // Time in ms between key presses
+    this.score = 0;
     this.isGameOver = false;
 
     /* DRAW GRID */
@@ -80,6 +76,7 @@ const GameScene = {
         fill: "#fff",
         align: "center",
       })
+      .setDepth(1)
       .setOrigin(0.5, 0.5)
       .setVisible(false); // Initially invisible
 
@@ -89,8 +86,16 @@ const GameScene = {
         fontSize: "24px",
         fill: "#fff",
       })
+      .setDepth(1)
       .setOrigin(0.5, 0.5)
       .setVisible(false); // Initially invisible
+
+    this.scoreText = this.add
+      .text(5, 5, `Score: ${this.score}`, {
+        fontSize: "18px",
+        fill: "#fff",
+      })
+      .setDepth(1);
 
     createSnake.call(this);
 
